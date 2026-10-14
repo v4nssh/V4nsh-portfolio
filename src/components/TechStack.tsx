@@ -30,8 +30,8 @@ const textures = imageUrls.map((url) => textureLoader.load(url));
 
 const sphereGeometry = new THREE.SphereGeometry(1, 28, 28);
 
-const spheres = [...Array(30)].map(() => ({
-  scale: [0.7, 1, 0.8, 1, 1][Math.floor(Math.random() * 5)],
+const spheres = [...Array(16)].map(() => ({
+  scale: [0.8, 0.9, 0.95, 1.0][Math.floor(Math.random() * 4)],
 }));
 
 type SphereProps = {
@@ -52,32 +52,32 @@ function SphereGeo({
   const api = useRef<RapierRigidBody | null>(null);
 
   useFrame((_state, delta) => {
-    if (!isActive) return;
-    delta = Math.min(0.1, delta);
-    const impulse = vec
-      .copy(api.current!.translation())
-      .normalize()
-      .multiply(
-        new THREE.Vector3(
-          -50 * delta * scale,
-          -150 * delta * scale,
-          -50 * delta * scale
-        )
-      );
+    if (!isActive || !api.current) return;
+    delta = Math.min(0.05, delta);
+    const current = api.current.translation();
+    // Center point lowered to keep spheres below the 'MY TECHSTACK' header
+    const target = new THREE.Vector3(0, -1.8, 0);
+    const dir = vec.subVectors(target, new THREE.Vector3(current.x, current.y, current.z));
+    const dist = dir.length();
 
-    api.current?.applyImpulse(impulse, true);
+    if (dist > 0.2) {
+      dir.normalize();
+      const force = Math.min(dist * 14, 38) * delta * scale;
+      api.current.applyImpulse(dir.multiplyScalar(force), true);
+    }
   });
 
   return (
     <RigidBody
-      linearDamping={0.75}
-      angularDamping={0.15}
-      friction={0.2}
-      position={[r(10), r(6), r(6) - 2]}
+      linearDamping={1.2}
+      angularDamping={0.6}
+      friction={0.3}
+      position={[r(12), r(6) - 1.8, r(6) - 1.5]}
       ref={api}
       colliders={false}
     >
-      <BallCollider args={[scale]} />
+      {/* Collider 35% larger than mesh ensures an elegant visual gap between spheres */}
+      <BallCollider args={[scale * 1.35]} />
       <CylinderCollider
         rotation={[Math.PI / 2, 0, 0]}
         position={[0, 0, 1.2 * scale]}
