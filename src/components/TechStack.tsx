@@ -73,7 +73,7 @@ function SphereGeo({
       linearDamping={0.75}
       angularDamping={0.15}
       friction={0.2}
-      position={[r(20), r(20) - 25, r(20) - 10]}
+      position={[r(10), r(6), r(6) - 2]}
       ref={api}
       colliders={false}
     >
@@ -129,20 +129,25 @@ function Pointer({ vec = new THREE.Vector3(), isActive }: PointerProps) {
 }
 
 const TechStack = () => {
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(true);
 
   useEffect(() => {
     const st = ScrollTrigger.create({
       trigger: ".techstack",
-      start: "top 75%",
-      end: "bottom 25%",
+      start: "top 85%",
+      end: "bottom 15%",
       onEnter: () => setIsActive(true),
       onEnterBack: () => setIsActive(true),
       onLeave: () => setIsActive(false),
       onLeaveBack: () => setIsActive(false),
     });
 
+    const timer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 200);
+
     return () => {
+      clearTimeout(timer);
       st.kill();
     };
   }, []);

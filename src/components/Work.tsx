@@ -64,7 +64,7 @@ const Work = () => {
     const getScrollAmount = () => {
       const scrollWidth = workFlex.scrollWidth;
       const viewportWidth = window.innerWidth;
-      const amount = scrollWidth - viewportWidth + 140;
+      const amount = scrollWidth - viewportWidth;
       return Math.max(amount, 0);
     };
 
@@ -72,7 +72,7 @@ const Work = () => {
       scrollTrigger: {
         trigger: ".work-section",
         start: "top top",
-        end: () => `+=${Math.max(getScrollAmount(), 600)}`,
+        end: () => `+=${getScrollAmount()}`,
         scrub: 1,
         pin: true,
         pinType: "transform",
