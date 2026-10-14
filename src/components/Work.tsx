@@ -62,10 +62,13 @@ const Work = () => {
     if (!workFlex || !workSection) return;
 
     const getScrollAmount = () => {
-      const scrollWidth = workFlex.scrollWidth;
+      const boxes = workFlex.querySelectorAll(".work-box");
+      if (boxes.length === 0) return 0;
+      const lastBox = boxes[boxes.length - 1] as HTMLElement;
+      const totalWidth = lastBox.offsetLeft + lastBox.offsetWidth;
       const viewportWidth = window.innerWidth;
-      const amount = scrollWidth - viewportWidth;
-      return Math.max(amount, 0);
+      const needed = totalWidth - viewportWidth + 60;
+      return Math.max(needed, 0);
     };
 
     const timeline = gsap.timeline({
