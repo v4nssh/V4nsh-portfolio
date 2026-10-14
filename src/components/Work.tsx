@@ -4,48 +4,100 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 
-gsap.registerPlugin(useGSAP);
+gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+export interface Project {
+  id: string;
+  number: string;
+  title: string;
+  category: string;
+  tools: string;
+  image: string;
+  link?: string;
+}
+
+const projects: Project[] = [
+  {
+    id: "nexus-ai",
+    number: "01",
+    title: "Nexus AI Platform",
+    category: "AI & Neural Analytics",
+    tools: "Next.js, TypeScript, Python, TailwindCSS",
+    image: "/images/projects/nexus-ai.jpg",
+    link: "https://github.com",
+  },
+  {
+    id: "aura-3d",
+    number: "02",
+    title: "Aura 3D Studio",
+    category: "WebGL Spatial Experience",
+    tools: "Three.js, React Three Fiber, GLSL, GSAP",
+    image: "/images/projects/aura-3d.jpg",
+    link: "https://github.com",
+  },
+  {
+    id: "cryptosphere",
+    number: "03",
+    title: "CryptoSphere Terminal",
+    category: "Web3 & DeFi Analytics",
+    tools: "React, WebSockets, Ethers.js, Chart.js",
+    image: "/images/projects/cryptosphere.jpg",
+    link: "https://github.com",
+  },
+  {
+    id: "hyperion-cloud",
+    number: "04",
+    title: "Hyperion Cloud Console",
+    category: "DevOps & Cluster Monitor",
+    tools: "Node.js, Docker, Kubernetes, GraphQL",
+    image: "/images/projects/hyperion-cloud.jpg",
+    link: "https://github.com",
+  },
+];
 
 const Work = () => {
   useGSAP(() => {
-  let translateX: number = 0;
+    const workFlex = document.querySelector(".work-flex") as HTMLElement;
+    const workSection = document.querySelector(".work-section") as HTMLElement;
+    if (!workFlex || !workSection) return;
 
-  function setTranslateX() {
-    const box = document.getElementsByClassName("work-box");
-    const rectLeft = document
-      .querySelector(".work-container")!
-      .getBoundingClientRect().left;
-    const rect = box[0].getBoundingClientRect();
-    const parentWidth = box[0].parentElement!.getBoundingClientRect().width;
-    let padding: number =
-      parseInt(window.getComputedStyle(box[0]).padding) / 2;
-    translateX = rect.width * box.length - (rectLeft + parentWidth) + padding;
-  }
+    const getScrollAmount = () => {
+      const scrollWidth = workFlex.scrollWidth;
+      const viewportWidth = window.innerWidth;
+      const amount = scrollWidth - viewportWidth + 140;
+      return Math.max(amount, 0);
+    };
 
-  setTranslateX();
+    const timeline = gsap.timeline({
+      scrollTrigger: {
+        trigger: ".work-section",
+        start: "top top",
+        end: () => `+=${Math.max(getScrollAmount(), 600)}`,
+        scrub: 1,
+        pin: true,
+        pinType: "transform",
+        anticipatePin: 1,
+        invalidateOnRefresh: true,
+        id: "work-pin",
+      },
+    });
 
-  let timeline = gsap.timeline({
-    scrollTrigger: {
-      trigger: ".work-section",
-      start: "top top",
-      end: `+=${translateX}`, // Use actual scroll width
-      scrub: true,
-      pin: true,
-      id: "work",
-    },
-  });
+    timeline.to(".work-flex", {
+      x: () => -getScrollAmount(),
+      ease: "none",
+    });
 
-  timeline.to(".work-flex", {
-    x: -translateX,
-    ease: "none",
-  });
+    const refreshTimer = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 250);
 
-  // Clean up (optional, good practice)
-  return () => {
-    timeline.kill();
-    ScrollTrigger.getById("work")?.kill();
-  };
-}, []);
+    return () => {
+      clearTimeout(refreshTimer);
+      timeline.kill();
+      ScrollTrigger.getById("work-pin")?.kill();
+    };
+  }, []);
+
   return (
     <div className="work-section" id="work">
       <div className="work-container section-container">
@@ -53,21 +105,20 @@ const Work = () => {
           My <span>Work</span>
         </h2>
         <div className="work-flex">
-          {[...Array(6)].map((_value, index) => (
-            <div className="work-box" key={index}>
+          {projects.map((project) => (
+            <div className="work-box" key={project.id}>
               <div className="work-info">
                 <div className="work-title">
-                  <h3>0{index + 1}</h3>
-
+                  <h3>{project.number}</h3>
                   <div>
-                    <h4>Project Name</h4>
-                    <p>Category</p>
+                    <h4>{project.title}</h4>
+                    <p>{project.category}</p>
                   </div>
                 </div>
                 <h4>Tools and features</h4>
-                <p>Javascript, TypeScript, React, Threejs</p>
+                <p>{project.tools}</p>
               </div>
-              <WorkImage image="/images/placeholder.webp" alt="" />
+              <WorkImage image={project.image} alt={project.title} link={project.link} />
             </div>
           ))}
         </div>
