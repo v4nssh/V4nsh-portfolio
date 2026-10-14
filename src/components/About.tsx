@@ -6,9 +6,10 @@ const About = () => {
       <div className="about-me">
         <h3 className="title">About Me</h3>
         <p className="para">
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Hic quis
-          dolores numquam iusto Ratione earum ducimus autem id iure pariatur
-          dolorum quae maiores.
+          I am a Computer Engineering undergraduate at Medi-Caps University,
+          Indore. Passionate about architecting scalable full-stack web platforms,
+          geospatial environmental AI systems, and automated cloud workflows that
+          serve thousands of users.
         </p>
       </div>
     </div>
